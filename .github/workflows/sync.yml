@@ -1,37 +1,34 @@
-name: Mirror go/ folder to ahqstore repo
+name: Mirror from cli/go
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  schedule:
+    - cron: "*/30 * * * *"   # every 30 minutes
+  workflow_dispatch:         # allow manual trigger
 
 jobs:
-  mirror:
+  sync:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout source repo (cli)
+      - name: Checkout mirror repo (cli-go)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Clone target repo (ahqstore)
+      - name: Pull latest cli repo
         run: |
-          git clone https://github.com/ahqstore/ahqstore.git ../ahqstore
-          cd ../ahqstore
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git clone https://github.com/ahqstore/cli.git ../cli
 
-      - name: Sync cli/go → ahqstore/ahqstore/go
+      - name: Sync cli/go → cli-go/ahqstore
         run: |
-          mkdir -p ../ahqstore/ahqstore/go
-          rsync -av --delete ahqstore/ ../ahqstore/ahqstore/go/
-          cd ../ahqstore
-          git add ahqstore/go
+          mkdir -p ahqstore
+          rsync -av --delete ../cli/go/ ahqstore/
+          git add ahqstore
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Mirror update from cli/go folder"
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ahqstore/cli-go.git HEAD:main
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Mirror update from cli/go"
+            git push
           fi
