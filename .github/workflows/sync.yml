@@ -1,0 +1,37 @@
+name: Mirror go/ folder to ahqstore repo
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo (cli)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Clone target repo (ahqstore)
+        run: |
+          git clone https://github.com/ahqstore/ahqstore.git ../ahqstore
+          cd ../ahqstore
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Sync cli/go → ahqstore/ahqstore/go
+        run: |
+          mkdir -p ../ahqstore/ahqstore/go
+          rsync -av --delete ahqstore/ ../ahqstore/ahqstore/go/
+          cd ../ahqstore
+          git add ahqstore/go
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Mirror update from cli/go folder"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ahqstore/cli-go.git HEAD:main
+          fi
