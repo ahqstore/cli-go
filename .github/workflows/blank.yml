@@ -1,0 +1,30 @@
+name: Sync Subdirectory
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+
+permissions: write-all
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ahqstore/cli
+          fetch-depth: 0
+
+      - name: Filter History to Subdirectory
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git filter-branch --prune-empty --subdirectory-filter go HEAD
+          
+      - name: Push to Mirror
+        run: |
+          git remote add mirror https://x-access-token:${{ secrets.GITHUB_TOKEN }}@[github.com/$](https://github.com/$){{ github.repository }}
+          git push -f --tags mirror main
