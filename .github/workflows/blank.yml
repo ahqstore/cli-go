@@ -26,5 +26,7 @@ jobs:
           
       - name: Push to Mirror
         run: |
-          git remote add mirror https://x-access-token:${{ secrets.GITHUB_TOKEN }}@[github.com/$](https://github.com/$){{ github.repository }}
+          git remote add mirror https://$t:${{ secrets.GITHUB_TOKEN }}@[github.com/$](https://github.com/$){{ github.repository }}
           git push -f --tags mirror main
+        env:
+          t: x-access-token
