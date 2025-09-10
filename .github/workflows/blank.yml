@@ -36,4 +36,3 @@ jobs:
           git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@[github.com/$](https://github.com/$){{ github.repository }}
           # Force push the filtered history and tags to the origin.
           git push -f --tags origin main
-
