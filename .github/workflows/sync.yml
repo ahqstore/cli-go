@@ -1,8 +1,6 @@
 name: Mirror from cli/go
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"   # every 30 minutes
   workflow_dispatch:         # allow manual trigger
 
 jobs:
