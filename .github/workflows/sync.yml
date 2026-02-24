@@ -2,6 +2,10 @@ name: Mirror from cli/go
 
 on:
   workflow_dispatch:         # allow manual trigger
+    inputs:
+      sha:
+        type: string
+        required: true
 
 jobs:
   sync:
@@ -16,6 +20,8 @@ jobs:
       - name: Pull latest cli repo
         run: |
           git clone https://github.com/ahqstore/cli.git ../cli
+          cd ../cli
+          git fetch origin ${{ inputs.sha }}
 
       - name: Sync cli/go → cli-go/ahqstore
         run: |
