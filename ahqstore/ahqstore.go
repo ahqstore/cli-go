@@ -13,7 +13,7 @@ import (
 )
 
 // IMP
-const version = "0.16.0-alpha.26"
+const version = "0.16.0-alpha.27"
 // ENDIMP
 
 func main() {
