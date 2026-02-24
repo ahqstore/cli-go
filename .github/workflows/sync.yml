@@ -6,6 +6,9 @@ on:
       sha:
         type: string
         required: true
+      version:
+        type: string
+        required: true
 
 jobs:
   sync:
@@ -35,5 +38,11 @@ jobs:
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "Mirror update from cli/go"
+            
+            git tag "${{ inputs.version }}"
+            
+            # Push the commit AND the tag
+            git push origin main --tags
+            
             git push
           fi
